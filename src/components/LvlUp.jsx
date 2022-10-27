@@ -1,7 +1,28 @@
 import React from "react";
 import DamageLvl from "./DamageLvl";
+import { useStateContext } from "../context/StateContext";
 
 const LvlUp = () => {
+  const {
+    heroClass,
+    chooseHeroClass,
+    monster,
+    setMonster,
+    gameState,
+    setGameState,
+    fight,
+  } = useStateContext();
+
+  // destructure gameState
+  const { damage, support, special, gold, gems, exp, currentDamage, wave } =
+    gameState;
+
+  // destructure heroClass
+  const {
+    damage: damageClass,
+    support: supportClass,
+    special: specialClass,
+  } = heroClass;
   return (
     <div className="flex flex-col gap-4">
       <p className="text-2xl">Level Up</p>

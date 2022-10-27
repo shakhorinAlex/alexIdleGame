@@ -29,15 +29,21 @@ function App() {
           <div className="border-solid bg-lightPurple flex flex-col gap-2">
             <div className="flex flex-col gap-1">
               <p className="text-xs">Damage lvl: {damage.lvl}</p>
-              <p className="text-xs">Exp: 0/40</p>
+              <p className="text-xs">
+                Exp: {damage.exp}/{damage.expToLvl}
+              </p>
             </div>
             <div className="flex flex-col gap-1">
               <p className="text-xs">Support lvl: {support.lvl}</p>
-              <p className="text-xs">Exp: 0/40</p>
+              <p className="text-xs">
+                Exp: {support.exp}/{support.expToLvl}
+              </p>
             </div>
             <div className="flex flex-col gap-1">
               <p className="text-xs">Special lvl: {special.lvl}</p>
-              <p className="text-xs">Exp: 0/40</p>
+              <p className="text-xs">
+                Exp: {special.exp}/{special.expToLvl}
+              </p>
             </div>
           </div>
         </div>
