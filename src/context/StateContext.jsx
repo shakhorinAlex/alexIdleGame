@@ -43,9 +43,10 @@ export const StateContext = ({ children }) => {
     damageLevels: {
       baseDamage: {
         lvl: 0,
-        cost: 30,
+        cost: 5,
         increase: 1,
         maxLvl: 10,
+        maxCost: 30,
       },
       dmgMultiplier: {
         lvl: 0,

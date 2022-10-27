@@ -68,6 +68,11 @@ const DamageLvl = () => {
       newGameState.baseDamageLvl += 1;
       newGameState.baseDamage += baseDamage.increase;
       newGameState.gold -= baseDamage.cost;
+      // increase cost if cost is less than max cost
+      if (baseDamage.cost < baseDamage.maxCost) {
+        newLvlUp.damageLevels.baseDamage.cost += 5;
+      }
+
       newLvlUp.damageLevels.baseDamage.lvl += 1;
 
       setGameState(newGameState);
