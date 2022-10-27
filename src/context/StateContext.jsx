@@ -6,7 +6,7 @@ export const StateContext = ({ children }) => {
   const [gameState, setGameState] = useState({
     damage: {
       lvl: 0,
-      baseDamage: 20,
+      baseDamage: 5,
       attackSpeed: 1,
       lvlGold: 10,
       exp: 0,
@@ -35,7 +35,7 @@ export const StateContext = ({ children }) => {
     currentDamage: 0,
     gold: 0,
     gems: 0,
-    gameSpeed: 100,
+    gameSpeed: 1000,
   });
 
   // different state for lvls
