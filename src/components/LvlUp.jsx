@@ -1,5 +1,6 @@
 import React from "react";
 import DamageLvl from "./DamageLvl";
+import SkillLvlUp from "./skillTree/SkillLvlUp";
 import { useStateContext } from "../context/StateContext";
 
 const LvlUp = () => {
@@ -11,11 +12,24 @@ const LvlUp = () => {
     gameState,
     setGameState,
     fight,
+    skillTab,
+    changeSkillTab,
   } = useStateContext();
 
   // destructure gameState
-  const { damage, support, special, gold, gems, exp, currentDamage, wave } =
-    gameState;
+  const {
+    damage,
+    support,
+    special,
+    gems,
+    exp,
+    damageSkillPoints,
+    supportSkillPoints,
+    specialSkillPoints,
+    damageClassLvl,
+    supportClassLvl,
+    specialClassLvl,
+  } = gameState;
 
   // destructure heroClass
   const {
@@ -23,25 +37,14 @@ const LvlUp = () => {
     support: supportClass,
     special: specialClass,
   } = heroClass;
+
+  const firstLevel =
+    damageClassLvl >= 0 || supportClassLvl >= 0 || specialClassLvl >= 0;
+
   return (
-    <div className="flex flex-col gap-4">
-      <p className="text-2xl">Level Up</p>
-      <div className="flex justify-center ">
-        <p className="text-md p-2 px-6 border-solid border-2 border-veryLightPurple cursor-pointer">
-          Damage
-        </p>
-        <p className="text-md p-2 px-6 border-solid border-2 border-veryLightPurple cursor-pointer">
-          Support
-        </p>
-        <p className="text-md p-2 px-6 border-solid border-2 border-veryLightPurple cursor-pointer">
-          Special
-        </p>
-      </div>
-      <div className="flex flex-col">
-        <p>Level: 0</p>
-        <p>Skill points aviable: 0</p>
-      </div>
+    <div className="flex flex-col gap-4 ">
       <DamageLvl />
+      {firstLevel && <SkillLvlUp />}
     </div>
   );
 };

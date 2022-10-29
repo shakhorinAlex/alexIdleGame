@@ -5,19 +5,23 @@ import LvlUp from "./components/LvlUp";
 import { useStateContext } from "./context/StateContext";
 
 function App() {
-  const { heroClass, chooseHeroClass, monster, gameState, nFormatter } =
+  const { heroClass, chooseHeroClass, monster, gameState, setGameState, nFormatter, activeTab, changeMainTab } =
     useStateContext();
-
-  const [activeTab, setActiveTab] = useState("fight");
-  const handleClick = (tab) => {
-    setActiveTab(tab);
-    console.log(activeTab);
-  };
-
-  // destructure gameState
 
   const { damage, support, special, gold, gems, exp, currentDamage, wave } =
     gameState;
+
+  // function to switch gamespeed betwee 100 and 1000 in game state
+  const switchSpeed = () => {
+    // create a copy of gameState
+    const copyGameState = { ...gameState };
+    // switch speed
+    copyGameState.gameSpeed = copyGameState.gameSpeed === 100 ? 1000 : 100;
+    // set gameState to copyGameState
+    setGameState(copyGameState);
+  };
+
+  
 
   return (
     <div className="App">
@@ -47,11 +51,18 @@ function App() {
               </p>
             </div>
           </div>
+          <div className="flex gap-4 items-center justify-center">
+          <button onClick={switchSpeed} className="text-sm bg-veryLightPurple p-2 rounded-md">
+            Change speed
+          </button>
+       
+          </div>
+
         </div>
         <div className="px-10 main-content py-10 border-2 border-veryLightPurple w-full">
           <div className="flex flex-row mb-8 justify-center">
             <p
-              onClick={() => handleClick("fight")}
+              onClick={() => changeMainTab("fight")}
               className={`text-md p-2 px-6 border-solid border-2 border-veryLightPurple cursor-pointer 
                ${activeTab === "fight" ? "bg-veryLightPurple" : "transparent"}`}
             >
@@ -59,7 +70,7 @@ function App() {
             </p>
 
             <p
-              onClick={() => handleClick("lvlUp")}
+              onClick={() => changeMainTab("lvlUp")}
               className={`text-md p-2 px-6 border-solid border-2 border-veryLightPurple cursor-pointer 
                ${activeTab === "lvlUp" ? "bg-veryLightPurple" : "transparent"}`}
             >

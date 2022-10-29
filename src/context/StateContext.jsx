@@ -1,19 +1,30 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useRef,
+} from "react";
+import { toast } from "react-hot-toast";
+import { BsFillArrowUpSquareFill } from "react-icons/bs";
 
 const Context = createContext();
 
 export const StateContext = ({ children }) => {
   const [gameState, setGameState] = useState({
     damage: {
+      heroName: "Warrior",
       lvl: 0,
       baseDamage: 5,
-      damage: 5,
+      damage: 50,
       attackSpeed: 1,
       lvlGold: 10,
       exp: 0,
       expToLvl: 40,
+      lvlUp: false,
     },
     support: {
+      heroName: "Rogue",
       lvl: 0,
       baseDamage: 2,
       damage: 2,
@@ -21,8 +32,11 @@ export const StateContext = ({ children }) => {
       lvlGold: 10,
       exp: 0,
       expToLvl: 40,
+      lvlUp: false,
     },
     special: {
+      heroName: "Mage",
+      id: 0,
       lvl: 0,
       baseDamage: 2,
       damage: 2,
@@ -30,15 +44,21 @@ export const StateContext = ({ children }) => {
       lvlGold: 10,
       exp: 0,
       expToLvl: 40,
+      lvlUp: false,
     },
     wave: 1,
-    dmgMultiplier: 1,
-
-    expForKill: 1,
+    damageSkillPoints: 0,
+    damageClassLvl: 0,
+    supportSkillPoints: 0,
+    supportClassLvl: 0,
+    specialSkillPoints: 0,
+    specialClassLvl: 0,
+    expForKill: 30,
     currentDamage: 0,
+    dmgMultiplier: 1,
     gold: 0,
     gems: 0,
-    gameSpeed: 1000,
+    gameSpeed: 100,
   });
 
   // different state for lvls
@@ -77,7 +97,7 @@ export const StateContext = ({ children }) => {
   const [monster, setMonster] = useState({
     baseHp: 10,
     hp: 10,
-    gold: 1000,
+    gold: 10,
     gems: 1,
     wave: 1,
   });
@@ -87,6 +107,15 @@ export const StateContext = ({ children }) => {
     support: false,
     special: false,
   });
+
+  const [activeTab, setActiveTab] = useState("fight");
+  const changeMainTab = (tab) => {
+    setActiveTab(tab);
+  };
+  const [skillTab, setSkillTab] = useState("");
+  const changeSkillTab = (tab) => {
+    setSkillTab(tab);
+  };
 
   const roundDown = (num) => {
     return Math.floor(num);
@@ -122,6 +151,46 @@ export const StateContext = ({ children }) => {
     return (num / si[i].value).toFixed(2).replace(rx, "$1") + si[i].symbol;
   }
 
+  // toast with text
+  const toastText = (text) => {
+    toast(text, {
+      style: {
+        background: "#333",
+        color: "#fff",
+      },
+    });
+  };
+
+  // const toastWithButton = (text, buttonText, buttonCallback) => {
+  //   toast(text, {
+  //     icon: "👋",
+  //     // Render a button.
+  //     // eslint-disable-next-line react/display-name
+  //     action: () => (
+  //       <button
+  //         style={{ color: "white", fontWeight: "bold" }}
+  //         onClick={buttonCallback}
+  //       >
+  //         Hello button
+  //       </button>
+  //     ),
+  //   });
+  // }
+
+  const toastBtn = (text, callBack) => {
+    toast(() => (
+      <span className="flex">
+        <span className="text-emerald-500 mr-2">
+          <BsFillArrowUpSquareFill onClick={callBack} />
+        </span>
+        {text}
+        <button className=" ml-2 p-1 text-xs underline" onClick={callBack}>
+          open
+        </button>
+      </span>
+    ));
+  };
+
   // choose class function
 
   const chooseHeroClass = (e) => {
@@ -156,6 +225,18 @@ export const StateContext = ({ children }) => {
       });
     }
   }, [heroClass, lvlUp]);
+
+  // use effect to show toast when class is chosen
+
+  useEffect(() => {
+    if (heroClass.damage) {
+      toastText("You have chosen the damage class");
+    } else if (heroClass.support) {
+      toastText("You have chosen the support class");
+    } else if (heroClass.special) {
+      toastText("You have chosen the special class");
+    }
+  }, [heroClass]);
 
   // start fight after choosing hero class
   useEffect(() => {
@@ -256,68 +337,12 @@ export const StateContext = ({ children }) => {
     }
   }, [fight.kill]);
 
-  function getWaveHPNew(wave) {
-    hp = 10;
-    for (i = 2; i <= wave; i++) {
-      let is10 = i % 10;
-
-      base_multi = 1.05;
-      if (i % 50 == 0) {
-        base_multi = 1.25;
-      } else if (is10 == 5) {
-        base_multi = 1.075;
-      } else if (is10 == 0) {
-        base_multi = 1.1;
-      }
-
-      multi = 0;
-      if (i > 5000) {
-        multi = 0.048;
-      } else if (i > 3500) {
-        multi = 0.045;
-      } else if (i > 2500) {
-        multi = 0.0375;
-      } else if (i > 1000) {
-        multi = 0.0425;
-      } else if (i > 600) {
-        multi = 0.035;
-      } else if (i > 300) {
-        multi = 0.03;
-      } else if (i > 180) {
-        multi = 0.025;
-      } else if (i > 120) {
-        multi = 0.01;
-      }
-
-      if (i > 50) {
-        hp *= base_multi - multi;
-      } else if (i > 40) {
-        hp += 10;
-      } else if (i > 30) {
-        hp += 8;
-      } else if (i > 20) {
-        hp += 6;
-      } else if (i > 10) {
-        hp += 4;
-      } else {
-        hp += 2;
-      }
-      if (hp == NaN || hp == Infinity) {
-        break;
-      }
-      hp = Math.round(hp, 0);
-    }
-    if (hp == NaN || hp == Infinity) {
-      hp = 1.5 * Math.pow(10, 308);
-    }
-
-    return hp;
-  }
-
   // increase gold and gems after kill
   useEffect(() => {
     if (fight.kill) {
       const newState = { ...gameState };
+
+      // if any of classes lvl up show toast with button
 
       // add exp to game state class that killed monster
       if (heroClass.damage) {
@@ -336,55 +361,72 @@ export const StateContext = ({ children }) => {
       // level up if exp is enough to level up
       if (newState.damage.exp >= newState.damage.expToLvl) {
         newState.damage.lvl += 1;
+        newState.damageClassLvl += 1;
         newState.damage.exp = 0;
         newState.damage.expToLvl = roundDown(newState.damage.expToLvl * 1.35);
-        newState.damage.lvlGold += 1;
+        newState.damage.lvlUp = true;
+        newState.damageSkillPoints += 1;
+        // newState.damage.lvlGold += 1;
+      } else {
+        newState.damage.lvlUp = false;
       }
       if (newState.support.exp >= newState.support.expToLvl) {
         newState.support.lvl += 1;
+        newState.supportClassLvl += 1;
         newState.support.exp = 0;
-        newState.support.expToLvl += 10;
-        newState.support.baseDamage += 1;
-        newState.support.attackSpeed += 0.1;
-        newState.support.lvlGold += 1;
+        newState.support.expToLvl = roundDown(newState.support.expToLvl * 1.35);
+        newState.support.lvlUp = true;
+        newState.supportSkillPoints += 1;
+        // newState.support.lvlGold += 1;
+      } else {
+        newState.support.lvlUp = false;
       }
 
       if (newState.special.exp >= newState.special.expToLvl) {
         newState.special.lvl += 1;
+        newState.specialClassLvl += 1;
         newState.special.exp = 0;
-        newState.special.expToLvl += 10;
-        newState.special.baseDamage += 1;
-        newState.special.attackSpeed += 0.1;
-        newState.special.lvlGold += 1;
+        newState.special.expToLvl = roundDown(newState.special.expToLvl * 1.35);
+        newState.special.lvlUp = true;
+        newState.specialSkillPoints += 1;
+        // newState.special.lvlGold += 1;
+      } else {
+        newState.special.lvlUp = false;
       }
 
       setGameState(newState);
     }
   }, [fight.kill]);
 
-  // level up damage class
-
-  // function to level up damage class
-  // const lvlUpDamage = () => {
-  //   if (gameState.gold >= gameState.damage.cost) {
-  //     setGameState({
-  //       ...gameState,
-  //       gold: gameState.gold - gameState.damage.cost,
-  //       damage: {
-  //         ...gameState.damage,
-  //         lvl: gameState.damage.lvl + 1,
-  //         damage: gameState.damage.damage + 1,
-  //         cost: Math.floor(
-  //           gameState.damage.cost * gameState.damage.costMultiplier
-  //         ),
-  //       },
-  //     });
-  //   }
-  // };
+  useEffect(() => {
+    if (gameState.damage.lvlUp) {
+      toastBtn(
+        `${gameState.damage.heroName} has leveled up`,
+        () => changeMainTab("lvlUp"),
+        changeSkillTab("damage")
+      );
+    } else if (gameState.support.lvlUp) {
+      toastBtn(
+        `${gameState.support.heroName} has leveled up`,
+        () => changeMainTab("lvlUp"),
+        changeSkillTab("support")
+      );
+    } else if (gameState.special.lvlUp) {
+      toastBtn(
+        `${gameState.special.heroName} has leveled up`,
+        () => changeMainTab("lvlUp"),
+        changeSkillTab("special")
+      );
+    }
+  }, [gameState.damage.lvl, gameState.support.lvl, gameState.special.lvl]);
 
   return (
     <Context.Provider
       value={{
+        activeTab,
+        changeMainTab,
+        skillTab,
+        changeSkillTab,
         gameState,
         setGameState,
         fight,

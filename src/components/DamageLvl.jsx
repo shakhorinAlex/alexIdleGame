@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useStateContext } from "../context/StateContext";
 
+
 const DamageLvl = () => {
   // round down 2 decimals
   const roundDown = (num) => {
@@ -106,21 +107,23 @@ const DamageLvl = () => {
 
     if (gold >= newLvlUp.damageLevels.goldDamage.cost) {
       newGameState.gold -= newLvlUp.damageLevels.goldDamage.cost;
-      newGameState.damage.damage = round(
-        (newGameState.damage.damage + newGameState.damage.baseDamage) * 1.05
-      );
-      newGameState.support.damage = round(
-        (newGameState.support.damage + newGameState.support.baseDamage) * 1.05
-      );
-      newGameState.special.damage = round(
-        (newGameState.special.damage + newGameState.special.baseDamage) * 1.05
-      );
-
-      if (newLvlUp.damageLevels.goldDamage.lvl % 25 === 0) {
-        newGameState.damage.damage * 1.5;
-        newGameState.support.damage * 2;
-        newGameState.special.damage * 1.5;
+      
+      // 
+      if (newLvlUp.damageLevels.goldDamage.lvl === (newLvlUp.damageLevels.goldDamage.bonusLvl - 1)) {
+        newGameState.damage.damage *= 1.5;
+        newGameState.support.damage *= 1.5;
+        newGameState.special.damage *= 1.5;
         newLvlUp.damageLevels.goldDamage.bonusLvl += 25;
+      } else {
+        newGameState.damage.damage = round(
+          (newGameState.damage.damage + newGameState.damage.baseDamage) * 1.05
+        );
+        newGameState.support.damage = round(
+          (newGameState.support.damage + newGameState.support.baseDamage) * 1.05
+        );
+        newGameState.special.damage = round(
+          (newGameState.special.damage + newGameState.special.baseDamage) * 1.05
+        );
       }
 
       newLvlUp.damageLevels.goldDamage.lvl += 1;
@@ -135,30 +138,6 @@ const DamageLvl = () => {
       setGameState(newGameState);
       setLvlUp(newLvlUp);
 
-      // setGameState(...newGameState, {
-      //   damage: {
-      //     ...newGameState.damage,
-      //     damage: prevDamage + prevBaseDamage,
-      //   },
-      //   support: {
-      //     ...newGameState.support,
-      //     damage: prevSupport + prevBaseSupport,
-      //   },
-      //   special: {
-      //     ...newGameState.special,
-      //     damage: prevSpecial + prevBaseSpecial,
-      //   },
-      // });
-
-      // setLvlUp(...lvlUp, {
-      //   damageLevels: {
-      //     goldDamage: {
-      //       lvl: goldLvl,
-      //       cost: goldCost,
-      //       bonusLvl: goldBonusLvl,
-      //     },
-      //   },
-      // });
     }
   };
 
@@ -230,7 +209,7 @@ const DamageLvl = () => {
         </button>
       </div>
       {/* Base Damage */}
-      <div className="flex flex-row gap-2 justify-between items-center">
+      {/* <div className="flex flex-row gap-2 justify-between items-center">
         <div className="flex-col align-start justify-start text-left">
           <p className="text-md">Base Damage: +{baseDamage.lvl}</p>
         </div>
@@ -242,9 +221,9 @@ const DamageLvl = () => {
           <p className="font-bold text-sm">Lvl Up</p>
           <p className="text-sm"> ({baseDamage.cost} gold)</p>
         </button>
-      </div>
+      </div> */}
       {/* Multiplier */}
-      {gameState.wave > 2 && (
+      {gameState.wave > 50 && (
         <div className="flex flex-row gap-2 justify-between items-center">
           <div className="flex-col align-start justify-start text-left">
             <p className="text-md">Damage lvl: {dmgMult.lvl}</p>
