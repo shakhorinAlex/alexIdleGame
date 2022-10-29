@@ -10,6 +10,7 @@ const Fight = () => {
     gameState,
     setGameState,
     fight,
+    nFormatter,
   } = useStateContext();
 
   // destructure gameState
@@ -27,7 +28,7 @@ const Fight = () => {
     <div className="flex flex-col gap-4">
       <div className="flex gap-3 flex-col items-center">
         <p className="text-xl font-semibold">Wave {wave}</p>
-        <p className="text-md">Monster HP: {monster.hp}</p>
+        <p className="text-md">Monster HP: {nFormatter(monster.hp)}</p>
         <p className="text-md">Your Attack: {currentDamage}</p>
         {/* time to kill */}
         <p className="text-md">Time to kill: {fight.killTime / 1000}</p>

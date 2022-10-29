@@ -7,6 +7,7 @@ export const StateContext = ({ children }) => {
     damage: {
       lvl: 0,
       baseDamage: 5,
+      damage: 5,
       attackSpeed: 1,
       lvlGold: 10,
       exp: 0,
@@ -15,6 +16,7 @@ export const StateContext = ({ children }) => {
     support: {
       lvl: 0,
       baseDamage: 2,
+      damage: 2,
       attackSpeed: 1,
       lvlGold: 10,
       exp: 0,
@@ -23,6 +25,7 @@ export const StateContext = ({ children }) => {
     special: {
       lvl: 0,
       baseDamage: 2,
+      damage: 2,
       attackSpeed: 1,
       lvlGold: 10,
       exp: 0,
@@ -41,6 +44,12 @@ export const StateContext = ({ children }) => {
   // different state for lvls
   const [lvlUp, setLvlUp] = useState({
     damageLevels: {
+      goldDamage: {
+        lvl: 1,
+        baseCost: 5,
+        cost: 5,
+        bonusLvl: 25,
+      },
       baseDamage: {
         lvl: 0,
         cost: 5,
@@ -66,9 +75,9 @@ export const StateContext = ({ children }) => {
   });
 
   const [monster, setMonster] = useState({
-    baseHp: 40,
-    hp: 40,
-    gold: 10,
+    baseHp: 10,
+    hp: 10,
+    gold: 1000,
     gems: 1,
     wave: 1,
   });
@@ -85,6 +94,33 @@ export const StateContext = ({ children }) => {
   const roundUp = (num) => {
     return Math.ceil(num);
   };
+
+  // round number
+  const round = (num) => {
+    return Math.round(num);
+  };
+
+  // Number to string with commas
+
+  function nFormatter(num) {
+    const si = [
+      { value: 1, symbol: "" },
+      { value: 1e3, symbol: "K" },
+      { value: 1e6, symbol: "M" },
+      { value: 1e9, symbol: "B" },
+      { value: 1e12, symbol: "T" },
+      { value: 1e15, symbol: "P" },
+      { value: 1e18, symbol: "E" },
+    ];
+    const rx = /\.0+$|(\.[0-9]*[1-9])0+$/;
+    let i;
+    for (i = si.length - 1; i > 0; i--) {
+      if (num >= si[i].value) {
+        break;
+      }
+    }
+    return (num / si[i].value).toFixed(2).replace(rx, "$1") + si[i].symbol;
+  }
 
   // choose class function
 
@@ -103,19 +139,19 @@ export const StateContext = ({ children }) => {
     if (heroClass.damage) {
       setGameState({
         ...gameState,
-        currentDamage: roundDown(gameState.damage.baseDamage * dmgMult.mult),
+        currentDamage: roundDown(gameState.damage.damage * dmgMult.mult),
         baseDamage: gameState.damage.baseDamage,
       });
     } else if (heroClass.support) {
       setGameState({
         ...gameState,
-        currentDamage: roundDown(gameState.support.baseDamage * dmgMult.mult),
+        currentDamage: roundDown(gameState.support.damage * dmgMult.mult),
         baseDamage: gameState.support.baseDamage,
       });
     } else if (heroClass.special) {
       setGameState({
         ...gameState,
-        currentDamage: roundDown(gameState.special.baseDamage * dmgMult.mult),
+        currentDamage: roundDown(gameState.special.damage * dmgMult.mult),
         baseDamage: gameState.special.baseDamage,
       });
     }
@@ -167,30 +203,118 @@ export const StateContext = ({ children }) => {
   // reset and increase wave and monster hp exponentially after kill
   useEffect(() => {
     if (fight.kill) {
+      let baseMultiplier = 1.05;
+      let mult = 0;
+
+      const bossWave = monster.wave % 10;
+
+      if (monster.wave % 50 == 0) {
+        baseMultiplier = 1.25;
+      } else if (bossWave == 5) {
+        baseMultiplier = 1.075;
+      } else if (bossWave == 0) {
+        baseMultiplier = 1.1;
+      }
+
+      if (monster.wave > 5000) {
+        mult = 0.048;
+      } else if (monster.wave > 3500) {
+        mult = 0.045;
+      } else if (monster.wave > 2500) {
+        mult = 0.0375;
+      } else if (monster.wave > 1000) {
+        mult = 0.0425;
+      } else if (monster.wave > 600) {
+        mult = 0.035;
+      } else if (monster.wave > 300) {
+        mult = 0.03;
+      } else if (monster.wave > 180) {
+        mult = 0.025;
+      } else if (monster.wave > 120) {
+        mult = 0.01;
+      }
+
+      if (monster.wave > 50) {
+        monster.baseHp *= baseMultiplier - mult;
+      } else if (monster.wave > 40) {
+        monster.baseHp += 10;
+      } else if (monster.wave > 30) {
+        monster.baseHp += 8;
+      } else if (monster.wave > 20) {
+        monster.baseHp += 6;
+      } else if (monster.wave > 10) {
+        monster.baseHp += 4;
+      } else {
+        monster.baseHp += 2;
+      }
+
       setMonster({
         ...monster,
-        baseHp: monster.baseHp ** 1.012,
-        hp: roundDown(monster.baseHp),
+        hp: round(monster.baseHp),
         wave: monster.wave + 1,
       });
     }
-  }, [fight]);
+  }, [fight.kill]);
 
-  // useEffect(() => {
-  //   if (fight.kill) {
-  //     setMonster({
-  //       ...monster,
-  //       gold: roundDown(monster.gold * monster.goldMultiplier),
-  //       hp: roundDown(monster.hp),
-  //       baseHp: roundDown(monster.baseHp * (monster.wave + 1.5)),
-  //       wave: monster.wave + 1,
-  //     });
-  //   }
-  //   setFight({ ...fight, kill: false });
-  // }, [fight.kill]);
+  function getWaveHPNew(wave) {
+    hp = 10;
+    for (i = 2; i <= wave; i++) {
+      let is10 = i % 10;
 
-  // add exp to game state class that killed monster and level up if exp is enough to level up
+      base_multi = 1.05;
+      if (i % 50 == 0) {
+        base_multi = 1.25;
+      } else if (is10 == 5) {
+        base_multi = 1.075;
+      } else if (is10 == 0) {
+        base_multi = 1.1;
+      }
 
+      multi = 0;
+      if (i > 5000) {
+        multi = 0.048;
+      } else if (i > 3500) {
+        multi = 0.045;
+      } else if (i > 2500) {
+        multi = 0.0375;
+      } else if (i > 1000) {
+        multi = 0.0425;
+      } else if (i > 600) {
+        multi = 0.035;
+      } else if (i > 300) {
+        multi = 0.03;
+      } else if (i > 180) {
+        multi = 0.025;
+      } else if (i > 120) {
+        multi = 0.01;
+      }
+
+      if (i > 50) {
+        hp *= base_multi - multi;
+      } else if (i > 40) {
+        hp += 10;
+      } else if (i > 30) {
+        hp += 8;
+      } else if (i > 20) {
+        hp += 6;
+      } else if (i > 10) {
+        hp += 4;
+      } else {
+        hp += 2;
+      }
+      if (hp == NaN || hp == Infinity) {
+        break;
+      }
+      hp = Math.round(hp, 0);
+    }
+    if (hp == NaN || hp == Infinity) {
+      hp = 1.5 * Math.pow(10, 308);
+    }
+
+    return hp;
+  }
+
+  // increase gold and gems after kill
   useEffect(() => {
     if (fight.kill) {
       const newState = { ...gameState };
@@ -274,6 +398,7 @@ export const StateContext = ({ children }) => {
         roundUp,
         lvlUp,
         setLvlUp,
+        nFormatter,
       }}
     >
       {children}

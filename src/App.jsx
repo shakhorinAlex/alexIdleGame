@@ -5,7 +5,8 @@ import LvlUp from "./components/LvlUp";
 import { useStateContext } from "./context/StateContext";
 
 function App() {
-  const { heroClass, chooseHeroClass, monster, gameState } = useStateContext();
+  const { heroClass, chooseHeroClass, monster, gameState, nFormatter } =
+    useStateContext();
 
   const [activeTab, setActiveTab] = useState("fight");
   const handleClick = (tab) => {
@@ -23,7 +24,7 @@ function App() {
       <div className="flex  content-between mx-auto h-screen w-10/12 bg-lightPurple ">
         <div className="resource-info flex gap-2 flex-col pt-4 w-1/4 border-2 border-veryLightPurple">
           <p className="text-2xl">Wave {wave}</p>
-          <p className="text-sm">Hp: {monster.hp}</p>
+          <p className="text-sm">Hp: {nFormatter(monster.hp)}</p>
           <p className="text-sm text-yellow-500">Gold: {gold}</p>
           <p className="text-sm">Gems: {gems}</p>
           <div className="border-solid bg-lightPurple flex flex-col gap-2">
