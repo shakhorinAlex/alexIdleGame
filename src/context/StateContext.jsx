@@ -287,15 +287,18 @@ export const StateContext = ({ children }) => {
       let baseMultiplier = 1.05;
       let mult = 0;
 
-      const bossWave = monster.wave % 10;
+      const nextWave = gameState.wave + 1;
 
-      if (monster.wave % 50 == 0) {
+      if (nextWave % 50 === 0) {
         baseMultiplier = 1.25;
-      } else if (bossWave == 5) {
+      } else if (nextWave % 10 === 5) {
         baseMultiplier = 1.075;
-      } else if (bossWave == 0) {
+      } else if (nextWave % 10 === 0) {
         baseMultiplier = 1.1;
       }
+
+      console.log("baseMultiplier:", baseMultiplier);
+      console.log("baseHp:", monster.baseHp);
 
       if (monster.wave > 5000) {
         mult = 0.048;
