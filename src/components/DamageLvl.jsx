@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useStateContext } from "../context/StateContext";
 
-
 const DamageLvl = () => {
   // round down 2 decimals
   const roundDown = (num) => {
@@ -107,9 +106,12 @@ const DamageLvl = () => {
 
     if (gold >= newLvlUp.damageLevels.goldDamage.cost) {
       newGameState.gold -= newLvlUp.damageLevels.goldDamage.cost;
-      
-      // 
-      if (newLvlUp.damageLevels.goldDamage.lvl === (newLvlUp.damageLevels.goldDamage.bonusLvl - 1)) {
+
+      //
+      if (
+        newLvlUp.damageLevels.goldDamage.lvl ===
+        newLvlUp.damageLevels.goldDamage.bonusLvl - 1
+      ) {
         newGameState.damage.damage *= 1.5;
         newGameState.support.damage *= 1.5;
         newGameState.special.damage *= 1.5;
@@ -137,7 +139,6 @@ const DamageLvl = () => {
 
       setGameState(newGameState);
       setLvlUp(newLvlUp);
-
     }
   };
 
@@ -223,7 +224,7 @@ const DamageLvl = () => {
         </button>
       </div> */}
       {/* Multiplier */}
-      {gameState.wave > 50 && (
+      {/* {gameState.wave > 50 && (
         <div className="flex flex-row gap-2 justify-between items-center">
           <div className="flex-col align-start justify-start text-left">
             <p className="text-md">Damage lvl: {dmgMult.lvl}</p>
@@ -239,7 +240,7 @@ const DamageLvl = () => {
             <p className="text-sm"> ({dmgMult.cost} gold)</p>
           </button>
         </div>
-      )}
+      )} */}
     </div>
   );
 };

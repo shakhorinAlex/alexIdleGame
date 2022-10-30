@@ -16,7 +16,7 @@ export const StateContext = ({ children }) => {
       heroName: "Warrior",
       lvl: 0,
       baseDamage: 5,
-      damage: 50,
+      damage: 10,
       attackSpeed: 1,
       lvlGold: 10,
       exp: 0,
@@ -47,7 +47,7 @@ export const StateContext = ({ children }) => {
       lvlUp: false,
     },
     wave: 1,
-    damageSkillPoints: 0,
+    damageSkillPoints: 20,
     damageClassLvl: 0,
     supportSkillPoints: 0,
     supportClassLvl: 0,
@@ -61,7 +61,7 @@ export const StateContext = ({ children }) => {
     gameSpeed: 100,
   });
 
-  // different state for lvls
+  // state for lvls
   const [lvlUp, setLvlUp] = useState({
     damageLevels: {
       goldDamage: {
@@ -77,16 +77,60 @@ export const StateContext = ({ children }) => {
         maxLvl: 10,
         maxCost: 30,
       },
-      dmgMultiplier: {
-        lvl: 0,
-        cost: 5,
-        mult: 1,
-        maxLvl: 25,
+      // dmgMultiplier: {
+      //   lvl: 0,
+      //   cost: 5,
+      //   mult: 1,
+      //   maxLvl: 25,
+      // },
+    },
+    skillTree: {
+      dmgSkillMult: 0,
+      damageClassSkills: {
+        damage1: {
+          id: "damage1",
+          name: "Damage I",
+          shortName: "Dmg I",
+          description:
+            "Increase all damage dealt by your heroes by 10% for each level of this skill.",
+          lvl: 0,
+          cost: 1,
+          mult: 0.1,
+          maxLvl: 10,
+          unlocked: true,
+          choosen: true,
+        },
+        damage2: {
+          id: "damage2",
+          name: "Damage II",
+          shortName: "Dmg II",
+          description:
+            "Increase all damage dealt by your heroes by 25% for each level of this skill.",
+          lvl: 0,
+          cost: 2,
+          mult: 0.25,
+          maxLvl: 10,
+          unlocked: false,
+          waveUnlock: 40,
+          choosen: false,
+        },
+        damage3: {
+          id: "damage3",
+          name: "Damage III",
+          shortName: "Dmg III",
+          description:
+            "Increase all damage dealt by your heroes by 50% for each level of this skill.",
+          lvl: 0,
+          cost: 5,
+          mult: 0.5,
+          maxLvl: 10,
+          unlocked: false,
+          waveUnlock: 400,
+          choosen: false,
+        },
       },
     },
   });
-
-  const { baseDamage, dmgMultiplier: dmgMult } = lvlUp.damageLevels;
 
   const [fight, setFight] = useState({
     fight: false,
@@ -161,22 +205,6 @@ export const StateContext = ({ children }) => {
     });
   };
 
-  // const toastWithButton = (text, buttonText, buttonCallback) => {
-  //   toast(text, {
-  //     icon: "👋",
-  //     // Render a button.
-  //     // eslint-disable-next-line react/display-name
-  //     action: () => (
-  //       <button
-  //         style={{ color: "white", fontWeight: "bold" }}
-  //         onClick={buttonCallback}
-  //       >
-  //         Hello button
-  //       </button>
-  //     ),
-  //   });
-  // }
-
   const toastBtn = (text, callBack) => {
     toast(() => (
       <span className="flex">
@@ -205,22 +233,28 @@ export const StateContext = ({ children }) => {
 
   // set current damage to selected hero class damage
   useEffect(() => {
+    // const dmgMultiplier from state
+    const stateMult = gameState.dmgMultiplier;
+    const damageClassLvlMult = lvlUp.skillTree.dmgSkillMult;
+
+    const dmgMult = stateMult + damageClassLvlMult;
+
     if (heroClass.damage) {
       setGameState({
         ...gameState,
-        currentDamage: roundDown(gameState.damage.damage * dmgMult.mult),
+        currentDamage: roundDown(gameState.damage.damage * dmgMult),
         baseDamage: gameState.damage.baseDamage,
       });
     } else if (heroClass.support) {
       setGameState({
         ...gameState,
-        currentDamage: roundDown(gameState.support.damage * dmgMult.mult),
+        currentDamage: roundDown(gameState.support.damage * dmgMult),
         baseDamage: gameState.support.baseDamage,
       });
     } else if (heroClass.special) {
       setGameState({
         ...gameState,
-        currentDamage: roundDown(gameState.special.damage * dmgMult.mult),
+        currentDamage: roundDown(gameState.special.damage * dmgMult),
         baseDamage: gameState.special.baseDamage,
       });
     }
@@ -296,9 +330,6 @@ export const StateContext = ({ children }) => {
       } else if (nextWave % 10 === 0) {
         baseMultiplier = 1.1;
       }
-
-      console.log("baseMultiplier:", baseMultiplier);
-      console.log("baseHp:", monster.baseHp);
 
       if (monster.wave > 5000) {
         mult = 0.048;
@@ -432,6 +463,7 @@ export const StateContext = ({ children }) => {
         changeSkillTab,
         gameState,
         setGameState,
+        round,
         fight,
         setFight,
         monster,
