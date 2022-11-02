@@ -28,11 +28,14 @@ const Fight = () => {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex gap-2 flex-col items-center">
-        <p className="text-xl font-semibold ">Wave {wave} </p>
-        <span className="text-sm font-semibold underline">
-          {wave % 10 === 0 ? "Boss" : ""}
-          {wave % 10 === 5 ? "mini-Boss" : ""}
-        </span>
+        <p className="text-xl font-semibold ">
+          Wave {wave}{" "}
+          <span className="text-sm font-semibold underline">
+            {wave % 10 === 0 ? "Boss" : ""}
+            {wave % 10 === 5 ? "mini-Boss" : ""}
+          </span>{" "}
+        </p>
+
         <p className="text-md">Monster HP: {nFormatter(monster.hp)}</p>
         <p className="text-md">Your Attack: {currentDamage}</p>
         {/* time to kill */}

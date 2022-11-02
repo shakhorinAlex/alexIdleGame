@@ -195,15 +195,18 @@ const DamageLvl = () => {
     <div className="flex flex-col gap-4 ">
       <p className="text-2xl mb-4">Damage</p>
       {/* Gold damage */}
-      <div className="flex flex-row gap-2 justify-between items-center">
-        <div className="flex-col align-start justify-start text-left">
-          <p className="text-md">Gold Lvl: {goldDamage.lvl}</p>
-          <p className="text-md">Current Damage: {currentDamage}</p>
+      <div className="grid grid-cols-2 gap-6 md:flex md:justify-between md:items-center">
+        <div className="flex-col text-left">
+          <p className="text-sm md:text-md">Gold Lvl: {goldDamage.lvl}</p>
+          <p className="text-sm md:text-md">Current Damage: {currentDamage}</p>
         </div>
-        <p className="text-xs">bonus at level: {goldDamage.bonusLvl}</p>
+        <p className="text-xs md:text-sm">
+          bonus at level: {goldDamage.bonusLvl}
+        </p>
+
         <button
           onClick={levelUpGoldDamage}
-          className="bg-yellow-500 text-white rounded-md px-2 py-1 w-28 h-12"
+          className=" col-span-2 md:px-8 md:py-2 bg-yellow-500 text-white rounded-md px-2 py-1"
         >
           <p className="font-bold text-sm">Lvl Up</p>
           <p className="text-sm"> ({goldDamage.cost} gold)</p>

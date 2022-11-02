@@ -137,44 +137,46 @@ const DamageTree = () => {
 
   // set next skill unlocked to true previous skill is maxed out
 
+  const skills = dmgSkillsArray.map((skill, id) => {
+    const { shortName, unlocked, choosen } = skill;
+
+    const unlockedStyle = unlocked ? "bg-red-500" : "bg-gray-800";
+    const choosenStyle = choosen ? "border-2 border-gray-400" : " ";
+
+    return (
+      <div
+        key={id}
+        className={`flex flex-col items-center justify-center w-20 h-20 p-6 mb-4 rounded ${unlockedStyle} ${choosenStyle} text-gray-100 font-semibold cursor-pointer`}
+        onClick={() => changeChoosen(skill)}
+      >
+        <p>{shortName}</p>
+      </div>
+    );
+  });
+
   return (
     <div className="flex flex-col items-center mt-6 gap-4 h-full">
       {/* map array dmgSkillsArray */}
-      <div className="flex gap-2">
-        {dmgSkillsArray.map((skill, id) => {
-          const { shortName, unlocked, choosen } = skill;
-
-          const unlockedStyle = unlocked ? "bg-red-500" : "bg-gray-800";
-          const choosenStyle = choosen ? "border-2 border-gray-400" : " ";
-
-          return (
-            <div
-              key={id}
-              className={`flex flex-col items-center justify-center rounded ${unlockedStyle} ${choosenStyle} w-20 h-20 text-gray-100 font-semibold cursor-pointer`}
-              onClick={() => changeChoosen(skill)}
-            >
-              <p>{shortName}</p>
-            </div>
-          );
-        })}
-      </div>
+      <div className="flex gap-2">{skills}</div>
 
       {/* <span className="font-light text-xs">+10% all damage</span> */}
-      <div className="flex justify-between items-center bg-gray-900 w-full mt-auto py-8 px-8">
-        <div className="flex-col text-left">
-          <h2 className="font-semibold">{name}</h2>
-          <span className="text-xs font-thin">max lvl: {maxLvl}</span>
-          <p className="text-sm">Level {lvl}</p>
-          <span className="text-xs font-thin">
-            {lvl === maxLvl ? "bonus:" : "next lvl:"} (
-            {lvl !== maxLvl
-              ? round((lvl + 1) * (mult * 100))
-              : round(lvl * (mult * 100))}
-            %)
-          </span>
+      <div className="flex flex-col md:flex-row md:justify-between gap-4 items-center bg-gray-900 w-full py-8 px-8">
+        <div className="flex flex-col col-span-2 md:flex-col md:text-left md:w-1/4">
+          <h2 className="font-semibold text-center md:text-left">{name}</h2>
+          <div className="flex gap-2 items-center justify-start md:items-start md:flex-col md:text-left">
+            <p className="text-sm order-first">Level {lvl}</p>
+            <span className="text-xs font-thin">max lvl: {maxLvl}</span>
+            <span className="text-xs font-thin">
+              {lvl === maxLvl ? "bonus:" : "next lvl:"} (
+              {lvl !== maxLvl
+                ? round((lvl + 1) * (mult * 100))
+                : round(lvl * (mult * 100))}
+              %)
+            </span>
+          </div>
         </div>
-        <div className="description">
-          <p className="text-sm w-3/5 mx-auto mb-1">{description}</p>
+        <div className="description description px-6 flex flex-col gap-2">
+          <p className="text-sm">{description}</p>
           {!unlocked && (
             <div className="">
               <p className="text-xs font-bold">

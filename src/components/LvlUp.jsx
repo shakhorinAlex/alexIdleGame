@@ -42,7 +42,7 @@ const LvlUp = () => {
     damageClassLvl >= 0 || supportClassLvl >= 0 || specialClassLvl >= 0;
 
   return (
-    <div className="flex flex-col gap-4 ">
+    <div className="flex flex-col gap-4">
       <DamageLvl />
       {firstLevel && <SkillLvlUp />}
     </div>
