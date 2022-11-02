@@ -38,8 +38,6 @@ const SpecialTree = () => {
     baseExp1Skill,
     goldGainMult1Skill,
     exGainMult1Skill,
-    exGainMult1Skill,
-    exGainMult1Skill,
   ];
 
   // function to change choosen value of a skill on click in map function
@@ -60,8 +58,6 @@ const SpecialTree = () => {
           baseGold1: newSkillsArray[0],
           baseExp1: newSkillsArray[1],
           goldGainMult1: newSkillsArray[2],
-          expGainMult1: newSkillsArray[3],
-          expGainMult1: newSkillsArray[3],
           expGainMult1: newSkillsArray[3],
         },
       },

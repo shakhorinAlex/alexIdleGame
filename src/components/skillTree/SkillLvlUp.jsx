@@ -71,7 +71,7 @@ const SkillLvlUp = () => {
           <p>
             {skillName} class level: {skillLvl}
           </p>
-          <p>You have {skillPoints} skill points left to spend</p>
+          <p>You have {eval(skillPoints)} skill points left to spend</p>
         </div>
       )}
       {skillTab === "damage" && <DamageTree />}
