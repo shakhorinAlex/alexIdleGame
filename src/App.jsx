@@ -1,7 +1,8 @@
 import { useState } from "react";
 import "./App.css";
-import Fight from "./components/Fight";
-import LvlUp from "./components/LvlUp";
+import Fight from "././components/Fight";
+// import { Fight, LvlUp } from "./components";
+import LvlUp from "././components/LvlUp";
 import { useStateContext } from "./context/StateContext";
 
 function App() {
