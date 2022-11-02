@@ -33,6 +33,16 @@ const SkillLvlUp = () => {
 
   const skillPoints = skillTab ? eval(skillTab + "SkillPoints") : 0;
   const skillLvl = skillTab ? eval(skillTab + "ClassLvl") : 0;
+  let skillTree = 0;
+
+  console.log(skillTab + "SkillPoints");
+  if (skillTab + "SkillPoints" === "damageSkillPoints") {
+    skillTree = damageSkillPoints;
+  } else if (skillTab + "SkillPoints" === "supportSkillPoints") {
+    skillTree = supportSkillPoints;
+  } else if (skillTab + "SkillPoints" === "specialSkillPoints") {
+    skillTree = specialSkillPoints;
+  }
 
   return (
     <div className="skillPoints mt-4">
@@ -71,7 +81,7 @@ const SkillLvlUp = () => {
           <p>
             {skillName} class level: {skillLvl}
           </p>
-          <p>You have {eval(skillPoints)} skill points left to spend</p>
+          <p>You have {skillTree} skill points left to spend</p>
         </div>
       )}
       {skillTab === "damage" && <DamageTree />}
