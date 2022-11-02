@@ -5,10 +5,18 @@ import LvlUp from "./components/LvlUp";
 import { useStateContext } from "./context/StateContext";
 
 function App() {
-  const { heroClass, chooseHeroClass, monster, gameState, setGameState, nFormatter, activeTab, changeMainTab } =
-    useStateContext();
+  const {
+    heroClass,
+    chooseHeroClass,
+    monster,
+    gameState,
+    setGameState,
+    nFormatter,
+    activeTab,
+    changeMainTab,
+  } = useStateContext();
 
-  const { damage, support, special, gold, gems, exp, currentDamage, wave } =
+  const { damage, support, special, gold, shards, exp, currentDamage, wave } =
     gameState;
 
   // function to switch gamespeed betwee 100 and 1000 in game state
@@ -21,8 +29,6 @@ function App() {
     setGameState(copyGameState);
   };
 
-  
-
   return (
     <div className="App">
       <div className="flex  content-between mx-auto h-screen w-10/12 bg-lightPurple ">
@@ -30,7 +36,7 @@ function App() {
           <p className="text-2xl">Wave {wave}</p>
           <p className="text-sm">Hp: {nFormatter(monster.hp)}</p>
           <p className="text-sm text-yellow-500">Gold: {gold}</p>
-          <p className="text-sm">Gems: {gems}</p>
+          <p className="text-sm">Shards: {shards}</p>
           <div className="border-solid bg-lightPurple flex flex-col gap-2">
             <div className="flex flex-col gap-1">
               <p className="text-xs">Damage lvl: {damage.lvl}</p>
@@ -52,12 +58,13 @@ function App() {
             </div>
           </div>
           <div className="flex gap-4 items-center justify-center">
-          <button onClick={switchSpeed} className="text-sm bg-veryLightPurple p-2 rounded-md">
-            Change speed
-          </button>
-       
+            <button
+              onClick={switchSpeed}
+              className="text-sm bg-veryLightPurple p-2 rounded-md"
+            >
+              Change speed
+            </button>
           </div>
-
         </div>
         <div className="px-10 main-content py-10 border-2 border-veryLightPurple w-full">
           <div className="flex flex-row mb-8 justify-center">

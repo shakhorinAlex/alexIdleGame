@@ -65,7 +65,8 @@ export const StateContext = ({ children }) => {
     goldForKill: 10,
     goldBaseGain: 10,
     goldMult: 1,
-    gems: 0,
+    shards: 0,
+    shardsPerBoss: 1,
     gameSpeed: 100,
   });
 
@@ -259,7 +260,7 @@ export const StateContext = ({ children }) => {
     baseHp: 10,
     hp: 10,
     gold: 10,
-    gems: 1,
+    shards: 1,
     wave: 1,
   });
 
@@ -512,10 +513,10 @@ export const StateContext = ({ children }) => {
 
       if (nextWave % 10 === 5) {
         newState.expMult *= 5;
-        newState.gems += monster.gems;
+        newState.shards += monster.shards;
       } else if (nextWave % 10 === 0) {
         newState.expMult *= 10;
-        newState.gems += monster.gems;
+        newState.shards += monster.shards;
       } else {
         newState.expMult = 1;
       }
@@ -542,7 +543,7 @@ export const StateContext = ({ children }) => {
         newState.special.exp += expGain;
       }
 
-      // add gold and gems to game state after killing monster
+      // add gold and shards to game state after killing monster
 
       // level up if exp is enough to level up
       if (newState.damage.exp >= newState.damage.expToLvl) {
@@ -581,11 +582,11 @@ export const StateContext = ({ children }) => {
       }
 
       // console log how much gold and exp was gained
-      console.log(
-        `You gained ${goldGain} gold and ${expGain} exp. For wave ${
-          newState.wave - 1
-        }`
-      );
+      // console.log(
+      //   `You gained ${goldGain} gold and ${expGain} exp. For wave ${
+      //     newState.wave - 1
+      //   }`
+      // );
 
       setGameState(newState);
     }
