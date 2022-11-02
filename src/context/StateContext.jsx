@@ -47,16 +47,24 @@ export const StateContext = ({ children }) => {
       lvlUp: false,
     },
     wave: 1,
+    skipChance: 0,
     damageSkillPoints: 20,
     damageClassLvl: 0,
-    supportSkillPoints: 0,
+    supportSkillPoints: 50,
     supportClassLvl: 0,
-    specialSkillPoints: 0,
+    specialSkillPoints: 50,
     specialClassLvl: 0,
-    expForKill: 30,
+    expForKill: 1,
+    expBaseGain: 1,
+    expMult: 1,
     currentDamage: 0,
     dmgMultiplier: 1,
+    attackSpeedMult: 1,
+    attackSpeed: 1,
     gold: 0,
+    goldForKill: 10,
+    goldBaseGain: 10,
+    goldMult: 1,
     gems: 0,
     gameSpeed: 100,
   });
@@ -98,6 +106,7 @@ export const StateContext = ({ children }) => {
           mult: 0.1,
           maxLvl: 10,
           unlocked: true,
+          prevMaxed: false,
           choosen: true,
         },
         damage2: {
@@ -127,6 +136,114 @@ export const StateContext = ({ children }) => {
           unlocked: false,
           waveUnlock: 400,
           choosen: false,
+        },
+      },
+      supportClassSkill: {
+        atkSpd1: {
+          id: "atkSpd1",
+          name: "Attack Speed",
+          shortName: "ASPD",
+          description:
+            "Increase attack speed of your heroes by 1% for each level of this skill.",
+          lvl: 0,
+          cost: 1,
+          mult: 0.01,
+          maxLvl: 5,
+          unlocked: true,
+          prevMaxed: false,
+          choosen: true,
+        },
+        waveSkip1: {
+          id: "waveSkip1",
+          name: "Wave skip",
+          shortName: "Wave Skip",
+          description:
+            "Increase chance to skip wave by 2% for each level of this skill. Skiping wave gives you 50% of exp/gold from the skipped wave. Don't skip boss waves.",
+          lvl: 0,
+          cost: 2,
+          mult: 0.02,
+          maxLvl: 5,
+          unlocked: false,
+          waveUnlock: 40,
+          choosen: false,
+        },
+        atkSpd2: {
+          id: "atkSpd2",
+          name: "Attack Speed II",
+          shortName: "ASPD",
+          description:
+            "Increase attack speed of your heroes by 2% for each level of this skill.",
+          lvl: 0,
+          cost: 5,
+          mult: 0.02,
+          maxLvl: 5,
+          unlocked: false,
+          prevMaxed: false,
+          choosen: false,
+          waveUnlock: 200,
+        },
+      },
+      specialClassSkill: {
+        baseGold1: {
+          id: "baseGold1",
+          name: "Gold Gain",
+          shortName: "Gold+",
+          description:
+            "Increase gold for kill by 1 for each level of this skill.",
+          lvl: 0,
+          cost: 1,
+          type: "goldBase",
+          increase: 1,
+          maxLvl: 10,
+          unlocked: true,
+          prevMaxed: false,
+          choosen: true,
+        },
+        baseExp1: {
+          id: "baseExp1",
+          name: "Exp Gain",
+          shortName: "Exp+",
+          description:
+            "Increase exp for kill by 1 for each level of this skill.",
+          lvl: 0,
+          cost: 1,
+          type: "expBase",
+          increase: 1,
+          maxLvl: 10,
+          unlocked: true,
+          prevMaxed: false,
+          choosen: false,
+          waveUnlock: 40,
+        },
+        goldGainMult1: {
+          id: "goldGainMult1",
+          name: "Gold Gain %",
+          shortName: "Gold%",
+          description: "Increase gold gain by 5% for each level of this skill.",
+          lvl: 0,
+          cost: 3,
+          type: "goldMult",
+          mult: 0.05,
+          maxLvl: 10,
+          unlocked: true,
+          prevMaxed: false,
+          choosen: false,
+          waveUnlock: 150,
+        },
+        expGainMult1: {
+          id: "expGainMult1",
+          name: "Exp Gain %",
+          shortName: "Exp%",
+          description: "Increase exp gain by 5% for each level of this skill.",
+          lvl: 0,
+          cost: 5,
+          type: "expMult",
+          mult: 0.05,
+          maxLvl: 10,
+          unlocked: true,
+          prevMaxed: false,
+          choosen: false,
+          waveUnlock: 350,
         },
       },
     },
@@ -239,23 +356,28 @@ export const StateContext = ({ children }) => {
 
     const dmgMult = stateMult + damageClassLvlMult;
 
+    const aspeedMult = gameState.attackSpeedMult;
+
     if (heroClass.damage) {
       setGameState({
         ...gameState,
         currentDamage: roundDown(gameState.damage.damage * dmgMult),
         baseDamage: gameState.damage.baseDamage,
+        attackSpeed: gameState.damage.attackSpeed * aspeedMult,
       });
     } else if (heroClass.support) {
       setGameState({
         ...gameState,
         currentDamage: roundDown(gameState.support.damage * dmgMult),
         baseDamage: gameState.support.baseDamage,
+        attackSpeed: gameState.support.attackSpeed * aspeedMult,
       });
     } else if (heroClass.special) {
       setGameState({
         ...gameState,
         currentDamage: roundDown(gameState.special.damage * dmgMult),
         baseDamage: gameState.special.baseDamage,
+        attackSpeed: gameState.special.attackSpeed * aspeedMult,
       });
     }
   }, [heroClass, lvlUp]);
@@ -290,7 +412,7 @@ export const StateContext = ({ children }) => {
     if (fight.fight) {
       const interval = setInterval(() => {
         setMonster({ ...monster, hp: monster.hp - gameState.currentDamage });
-      }, gameState.gameSpeed * gameState.damage.attackSpeed);
+      }, gameState.gameSpeed * gameState.attackSpeed);
       if (monster.hp <= 0) {
         clearInterval(interval);
         setFight({ ...fight, kill: true });
@@ -371,26 +493,56 @@ export const StateContext = ({ children }) => {
     }
   }, [fight.kill]);
 
-  // increase gold and gems after kill
+  const random = Math.random() * 100;
+
+  // increase resources after kill
   useEffect(() => {
     if (fight.kill) {
       const newState = { ...gameState };
+      let kills = 1;
+      const nextWave = newState.wave + 1;
+      const not10 = nextWave % 10;
 
-      // if any of classes lvl up show toast with button
+      const goldGain = round(newState.goldBaseGain * newState.goldMult);
+      // set goldGain to state goldForKill
+      newState.goldForKill = goldGain;
+      const expGain = round(newState.expBaseGain * newState.expMult * kills);
+      // set expGain to state expForKill
+      newState.expForKill = expGain;
+
+      if (nextWave % 10 === 5) {
+        newState.expMult *= 5;
+        newState.gems += monster.gems;
+      } else if (nextWave % 10 === 0) {
+        newState.expMult *= 10;
+        newState.gems += monster.gems;
+      } else {
+        newState.expMult = 1;
+      }
+
+      if (
+        random < newState.skipChance &&
+        not10 % 10 !== 0 &&
+        not10 % 10 !== 5
+      ) {
+        newState.gold += goldGain * 1.5;
+        newState.wave += 2;
+        kills = 1.5;
+      } else {
+        newState.gold += goldGain;
+        newState.wave += 1;
+      }
 
       // add exp to game state class that killed monster
       if (heroClass.damage) {
-        newState.damage.exp += newState.expForKill;
+        newState.damage.exp += expGain;
       } else if (heroClass.support) {
-        newState.support.exp += newState.expForKill;
+        newState.support.exp += expGain;
       } else if (heroClass.special) {
-        newState.special.exp += newState.expForKill;
+        newState.special.exp += expGain;
       }
 
       // add gold and gems to game state after killing monster
-      newState.gold += monster.gold;
-      newState.gems += monster.gems;
-      newState.wave += 1;
 
       // level up if exp is enough to level up
       if (newState.damage.exp >= newState.damage.expToLvl) {
@@ -428,6 +580,13 @@ export const StateContext = ({ children }) => {
         newState.special.lvlUp = false;
       }
 
+      // console log how much gold and exp was gained
+      console.log(
+        `You gained ${goldGain} gold and ${expGain} exp. For wave ${
+          newState.wave - 1
+        }`
+      );
+
       setGameState(newState);
     }
   }, [fight.kill]);
@@ -436,20 +595,20 @@ export const StateContext = ({ children }) => {
     if (gameState.damage.lvlUp) {
       toastBtn(
         `${gameState.damage.heroName} has leveled up`,
-        () => changeMainTab("lvlUp"),
-        changeSkillTab("damage")
+        () => changeMainTab("lvlUp")
+        // changeSkillTab("damage")
       );
     } else if (gameState.support.lvlUp) {
       toastBtn(
         `${gameState.support.heroName} has leveled up`,
-        () => changeMainTab("lvlUp"),
-        changeSkillTab("support")
+        () => changeMainTab("lvlUp")
+        // changeSkillTab("support")
       );
     } else if (gameState.special.lvlUp) {
       toastBtn(
         `${gameState.special.heroName} has leveled up`,
-        () => changeMainTab("lvlUp"),
-        changeSkillTab("special")
+        () => changeMainTab("lvlUp")
+        // changeSkillTab("special")
       );
     }
   }, [gameState.damage.lvl, gameState.support.lvl, gameState.special.lvl]);

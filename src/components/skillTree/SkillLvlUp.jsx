@@ -1,6 +1,8 @@
 import React from "react";
 import { useStateContext } from "../../context/StateContext";
 import DamageTree from "./DamageTree";
+import SupportTree from "./SupportTree";
+import SpecialTree from "./SpecialTree";
 
 const SkillLvlUp = () => {
   const {
@@ -72,7 +74,11 @@ const SkillLvlUp = () => {
           <p>You have {skillPoints} skill points left to spend</p>
         </div>
       )}
-      <DamageTree />
+      {skillTab === "damage" && <DamageTree />}
+      {skillTab === "support" && <SupportTree />}
+      {skillTab === "special" && <SpecialTree />}
+
+      {/* <DamageTree /> */}
     </div>
   );
 };

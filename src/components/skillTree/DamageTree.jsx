@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useStateContext } from "../../context/StateContext";
 
 const DamageTree = () => {
@@ -71,11 +71,14 @@ const DamageTree = () => {
     mult,
     maxLvl,
     unlocked,
+    prevMaxed,
     waveUnlock,
   } = choosenSkill[0];
 
-  // disabled button style tailwind
+  // disabled button
+  const disabled = !unlocked || lvl === maxLvl || damageSkillPoints < cost;
   const disabledButton = "bg-gray-500 text-gray-200 cursor-not-allowed";
+  const enabledButton = "bg-red-500";
 
   // function to level up skill on click with skillpoints from gameState
   const levelUpSkill = () => {
@@ -98,15 +101,41 @@ const DamageTree = () => {
       // increase damage class level by 1
       newGameState.damageClassLvl = damageClassLvl + 1;
 
+      // next skill unlocked to true
+
+      // if (lvl === maxLvl) {
+      //   newLvlUp.skillTree.damageClassSkills[id + 1].prevMaxed = true;
+      // }
+
       // set new lvlUp and new game state
       setLvlUp(newLvlUp);
       setGameState(newGameState);
-
-      console.log("lvl mult", newLvlUp.skillTree.dmgSkillMult);
-      console.log("dmg mult", newGameState.dmgMultiplier);
-      // log dmgSkillMult
     }
   };
+
+  useEffect(() => {
+    dmgSkillsArray.forEach((skill) => {
+      if (wave > skill.waveUnlock) {
+        skill.unlocked = true;
+      }
+    });
+
+    // set to state
+    setLvlUp({
+      ...lvlUp,
+      skillTree: {
+        ...lvlUp.skillTree,
+        damageClassSkills: {
+          ...lvlUp.skillTree.damageClassSkills,
+          damage1: dmgSkillsArray[0],
+          damage2: dmgSkillsArray[1],
+          damage3: dmgSkillsArray[2],
+        },
+      },
+    });
+  }, [wave]);
+
+  // set next skill unlocked to true previous skill is maxed out
 
   return (
     <div className="flex flex-col items-center mt-6 gap-4 h-full">
@@ -114,8 +143,9 @@ const DamageTree = () => {
       <div className="flex gap-2">
         {dmgSkillsArray.map((skill, id) => {
           const { shortName, unlocked, choosen } = skill;
-          const unlockedStyle = unlocked ? "bg-red-600" : "bg-gray-800";
-          const choosenStyle = choosen ? "bg-red-700" : "bg-red-500";
+
+          const unlockedStyle = unlocked ? "bg-red-500" : "bg-gray-800";
+          const choosenStyle = choosen ? "border-2 border-gray-400" : " ";
 
           return (
             <div
@@ -178,9 +208,9 @@ const DamageTree = () => {
             onClick={levelUpSkill}
             // disabled if not unlocked
 
-            disabled={!unlocked || lvl === maxLvl}
+            disabled={disabled}
             className={`${
-              !unlocked || lvl === maxLvl ? disabledButton : "bg-yellow-500"
+              disabled ? disabledButton : enabledButton
             } text-white rounded-md px-2 py-1 w-28 h-12`}
           >
             <p className="font-bold text-sm">Lvl Up</p>
