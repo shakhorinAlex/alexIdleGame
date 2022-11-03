@@ -4,6 +4,7 @@ import Fight from "././components/Fight";
 // import { Fight, LvlUp } from "./components";
 import LvlUp from "././components/LvlUp";
 import { useStateContext } from "./context/StateContext";
+import { FaScroll, FaCoins } from "react-icons/fa";
 
 function App() {
   const {
@@ -41,8 +42,19 @@ function App() {
               <span className="">{nFormatter(monster.hp)}</span>
             </div>
             <div className="flex gap-4 mb-2 ">
-              <p className="text-sm text-yellow-500">Gold: {gold}</p>
-              <p className="text-sm">Shards: {shards}</p>
+              <p className="text-sm flex items-center text-yellow-400">
+                <span className="text xs mr-2">
+                  <FaCoins />
+                </span>{" "}
+                {gold}
+              </p>
+              <p className="text-sm flex items-center">
+                <span className="scroll-icon text-xs mr-2 text-sky-300 ">
+                  <FaScroll />
+                </span>
+                {shards}
+                {/* Scrolls: */}
+              </p>
             </div>
             <div className="border-solid bg-lightPurple flex flex-row lg:flex-col items-center justify-between py-4 gap-4 mb-2">
               <div className="flex flex-col gap-1">
