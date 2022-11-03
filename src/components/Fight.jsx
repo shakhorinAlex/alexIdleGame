@@ -15,8 +15,17 @@ const Fight = () => {
   } = useStateContext();
 
   // destructure gameState
-  const { damage, support, special, gold, gems, exp, currentDamage, wave } =
-    gameState;
+  const {
+    damage,
+    support,
+    special,
+    gold,
+    gems,
+    exp,
+    currentDamage,
+    wave,
+    killTime,
+  } = gameState;
 
   // destructure heroClass
   const {
@@ -39,7 +48,7 @@ const Fight = () => {
         <p className="text-md">Monster HP: {nFormatter(monster.hp)}</p>
         <p className="text-md">Your Attack: {currentDamage}</p>
         {/* time to kill */}
-        <p className="text-md">Time to kill: {fight.killTime / 1000}</p>
+        <p className="text-md">Time to kill: {killTime / 1000}</p>
       </div>
       <div className="flex flex-col gap-2">
         <p className="text-xl font-bold">Choose your Hero</p>

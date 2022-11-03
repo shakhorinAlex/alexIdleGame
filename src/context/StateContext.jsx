@@ -46,8 +46,11 @@ export const StateContext = ({ children }) => {
       expToLvl: 40,
       lvlUp: false,
     },
+    currentTime: 0,
     wave: 1,
     skipChance: 0,
+    killTime: 30000,
+    baseKillTime: 30000,
     damageSkillPoints: 0,
     damageClassLvl: 0,
     supportSkillPoints: 0,
@@ -253,7 +256,6 @@ export const StateContext = ({ children }) => {
   const [fight, setFight] = useState({
     fight: false,
     kill: false,
-    killTime: 10000,
     killedInTime: false,
   });
 
@@ -340,6 +342,9 @@ export const StateContext = ({ children }) => {
 
   // choose class function
 
+  // save baseKillTime to const
+  const baseKillTime = gameState.baseKillTime;
+
   const chooseHeroClass = (e) => {
     if (e.target.classList.contains("damage")) {
       setHeroClass({ damage: true });
@@ -364,8 +369,10 @@ export const StateContext = ({ children }) => {
       setGameState({
         ...gameState,
         currentDamage: roundDown(gameState.damage.damage * dmgMult),
-        baseDamage: gameState.damage.baseDamage,
+        // baseDamage: gameState.damage.baseDamage,
         attackSpeed: gameState.damage.attackSpeed * aspeedMult,
+        // set kill time to 10000
+        killTime: baseKillTime,
       });
     } else if (heroClass.support) {
       setGameState({
@@ -373,6 +380,8 @@ export const StateContext = ({ children }) => {
         currentDamage: roundDown(gameState.support.damage * dmgMult),
         baseDamage: gameState.support.baseDamage,
         attackSpeed: gameState.support.attackSpeed * aspeedMult,
+        // set kill time to baseKillTime
+        killTime: baseKillTime,
       });
     } else if (heroClass.special) {
       setGameState({
@@ -380,6 +389,8 @@ export const StateContext = ({ children }) => {
         currentDamage: roundDown(gameState.special.damage * dmgMult),
         baseDamage: gameState.special.baseDamage,
         attackSpeed: gameState.special.attackSpeed * aspeedMult,
+        // set kill time to baseKillTime
+        killTime: baseKillTime,
       });
     }
   }, [heroClass, lvlUp]);
@@ -396,6 +407,33 @@ export const StateContext = ({ children }) => {
     }
   }, [heroClass]);
 
+  // current time in seconds to const
+  const currentTime = Date.now() / 1000;
+
+  // console.log(currentTime);
+
+  // set current time to state
+  // useEffect(() => {
+  //   setGameState({ ...gameState, currentTime: currentTime });
+  //   // log current time
+  //
+  // }, [currentTime]);
+
+  // start timer when wave starts
+
+  // useEffect(() => {
+  //   if (fight.fight) {
+  //     const timer = setInterval(() => {
+  //       // decrease kill time by 10000
+  //       setGameState({
+  //         ...gameState,
+  //         killTime: gameState.killTime - 1000,
+  //       });
+  //     }, gameState.gameSpeed);
+  //     return () => clearInterval(timer);
+  //   }
+  // }, [gameState.wave]);
+
   // start fight after choosing hero class
   useEffect(() => {
     if (
@@ -407,30 +445,61 @@ export const StateContext = ({ children }) => {
     }
   }, [heroClass]);
 
-  // descrease time to kill by game speed
+  // create interval do decrease kill time by 1000 every second
+  // useEffect(() => {
+  //   if (fight.fight) {
+  //     const timer = setInterval(() => {
+  //       // decrease kill time by 10000
+  //       setGameState({
+  //         ...gameState,
+  //         killTime: gameState.killTime - 1000,
+  //       });
+  //     }, gameState.gameSpeed);
+  //     return () => clearInterval(timer);
+  //   }
+  // }, [fight]);
+
+  // useEffect to decrease killTime every second
+  // useEffect(() => {
+  //   if (fight.fight) {
+  //     // decrease gameState killTime by 1000 every second if killTime is bigger than 0
+  //     if (gameState.killTime > 0) {
+  //       const interval = setInterval(() => {
+  //         setGameState({ ...gameState, killTime: gameState.killTime - 1000 });
+  //       }, gameState.gameSpeed);
+
+  //       if (fight.kill) {
+  //         setGameState({ ...gameState, killTime: baseKillTime });
+  //       }
+  //       return () => clearInterval(interval);
+  //     } else if (gameState.killTime <= 0) {
+  //       // set choose class to false
+  //       setHeroClass({ damage: false, support: false, special: false });
+  //       // clear current damage
+  //       // setGameState({ ...gameState, currentDamage: 0 });
+  //       // reset hp
+  //       setMonster({ ...monster, hp: monster.baseHp });
+  //       // set fight to false
+  //       setFight({ ...fight, fight: false });
+  //       // reset
+  //     }
+  //   }
+  // }, [fight]);
 
   // deal current damage to monster
   useEffect(() => {
-    if (fight.fight) {
+    if (fight.fight && monster.hp > 0) {
       const interval = setInterval(() => {
         setMonster({ ...monster, hp: monster.hp - gameState.currentDamage });
       }, gameState.gameSpeed * gameState.attackSpeed);
       // descrease time to kill by game speed
-
-      if (monster.hp <= 0) {
-        clearInterval(interval);
-        setFight({ ...fight, kill: true });
-      }
       return () => clearInterval(interval);
+    } else if (monster.hp <= 0) {
+      setFight({ ...fight, kill: true });
     }
+    console.log(fight.fight);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fight, gameState.currentDamage, gameState.gameSpeed]);
-
-  useEffect(() => {
-    if (monster.hp > 0) {
-      setFight({ ...fight, fight: true });
-    }
-  }, [monster]);
+  }, [fight, monster]);
 
   useEffect(() => {
     if (monster.hp === 0) {
@@ -488,16 +557,32 @@ export const StateContext = ({ children }) => {
         monster.baseHp += 2;
       }
 
-      setMonster({
-        ...monster,
-        hp: round(monster.baseHp),
-        wave: monster.wave + 1,
-      });
+      if (gameState.killTime > 0) {
+        setMonster({
+          ...monster,
+          hp: round(monster.baseHp),
+          wave: monster.wave + 1,
+        });
+      } else if (gameState.killTime === 0) {
+        setMonster({
+          ...monster,
+          hp: round(monster.baseHp),
+          wave: monster.wave,
+        });
+      }
+
+      // save previos wave hp to variable
+      // const prevHp = monster.baseHp;
+
+      // setMonster({
+      //   ...monster,
+      //   hp: round(monster.baseHp),
+      //   wave: monster.wave + 1,
+      // });
     }
   }, [fight.kill]);
 
   const random = Math.random() * 100;
-
   // increase resources after kill
   useEffect(() => {
     if (fight.kill) {
