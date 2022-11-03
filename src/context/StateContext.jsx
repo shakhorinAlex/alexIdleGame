@@ -16,7 +16,7 @@ export const StateContext = ({ children }) => {
       heroName: "Warrior",
       lvl: 0,
       baseDamage: 5,
-      damage: 1,
+      damage: 5,
       attackSpeed: 1,
       lvlGold: 10,
       exp: 0,
