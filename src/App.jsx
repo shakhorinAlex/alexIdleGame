@@ -33,11 +33,14 @@ function App() {
   return (
     <div className="App">
       <div className="container flex-col items-center justify-center lg:mt-16 ">
-        <div className="flex flex-col content-between lg:flex-row bg-lightPurple ">
-          <div className="resource-info flex gap-2 flex-col pt-4 border-2 border-veryLightPurple p-8 lg:w-1/4 ">
+        <div className="flex flex-col  content-between lg:flex-row bg-lightPurple ">
+          <div className="resource-info text-left flex gap-2 flex-col pt-4 border-2 border-veryLightPurple p-8 lg:w-1/4 ">
             <p className="text-2xl">Wave {wave}</p>
-            <p className="text-sm">Hp: {nFormatter(monster.hp)}</p>
-            <div className="flex gap-4 items-center justify-center mb-2 ">
+            <div className="flex items-center gap-2 ">
+              <p className="text-sm">Hp:</p>
+              <span className="">{nFormatter(monster.hp)}</span>
+            </div>
+            <div className="flex gap-4 mb-2 ">
               <p className="text-sm text-yellow-500">Gold: {gold}</p>
               <p className="text-sm">Shards: {shards}</p>
             </div>
