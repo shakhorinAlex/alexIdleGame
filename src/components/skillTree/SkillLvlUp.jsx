@@ -35,7 +35,6 @@ const SkillLvlUp = () => {
   const skillLvl = skillTab ? eval(skillTab + "ClassLvl") : 0;
   let skillTree = 0;
 
-  console.log(skillTab + "SkillPoints");
   if (skillTab + "SkillPoints" === "damageSkillPoints") {
     skillTree = damageSkillPoints;
   } else if (skillTab + "SkillPoints" === "supportSkillPoints") {

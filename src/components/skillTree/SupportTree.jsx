@@ -106,9 +106,7 @@ const SupportTree = () => {
       // increase damage class level by 1
 
       // log skill attackSpeedMult
-      console.log(newGameState.attackSpeedMult);
-      console.log(newGameState.skipChance);
-      console.log(newLvlUp.skillTree.supportClassSkill[id].mult);
+   
       setLvlUp(newLvlUp);
       setGameState(newGameState);
     }

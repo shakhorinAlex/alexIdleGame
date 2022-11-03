@@ -95,10 +95,10 @@ function App() {
                 Heroes
               </p>
               <p className="flex-grow text-md p-2 px-6 border-solid border-2 border-veryLightPurple cursor-pointer">
-                Pets
+                Prestige
               </p>
               <p className="flex-grow text-md p-2 px-6 border-solid border-2 border-veryLightPurple cursor-pointer">
-                Summon
+                Pets
               </p>
               <p className="flex-grow text-md p-2 px-6 border-solid border-2 border-veryLightPurple cursor-pointer">
                 Shop

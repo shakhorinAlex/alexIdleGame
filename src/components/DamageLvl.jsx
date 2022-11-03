@@ -135,7 +135,6 @@ const DamageLvl = () => {
           1.08
       );
 
-      console.log(newGameState.damage.damage - newGameState.damage.baseDamage);
 
       setGameState(newGameState);
       setLvlUp(newLvlUp);
@@ -206,7 +205,12 @@ const DamageLvl = () => {
 
         <button
           onClick={levelUpGoldDamage}
-          className=" col-span-2 md:px-8 md:py-2 bg-yellow-500 text-white rounded-md px-2 py-1"
+          disabled={gold < goldDamage.cost}
+          className={`${
+            gold < goldDamage.cost
+              ? "bg-gray-500 text-gray-200 cursor-not-allowed"
+              : "bg-yellow-500"
+          } col-span-2 md:px-8 md:py-2  text-white rounded-md px-2 py-1`}
         >
           <p className="font-bold text-sm">Lvl Up</p>
           <p className="text-sm"> ({goldDamage.cost} gold)</p>

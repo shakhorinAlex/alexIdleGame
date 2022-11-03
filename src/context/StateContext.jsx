@@ -16,7 +16,7 @@ export const StateContext = ({ children }) => {
       heroName: "Warrior",
       lvl: 0,
       baseDamage: 5,
-      damage: 10,
+      damage: 1,
       attackSpeed: 1,
       lvlGold: 10,
       exp: 0,
@@ -48,11 +48,11 @@ export const StateContext = ({ children }) => {
     },
     wave: 1,
     skipChance: 0,
-    damageSkillPoints: 20,
+    damageSkillPoints: 0,
     damageClassLvl: 0,
-    supportSkillPoints: 50,
+    supportSkillPoints: 0,
     supportClassLvl: 0,
-    specialSkillPoints: 50,
+    specialSkillPoints: 0,
     specialClassLvl: 0,
     expForKill: 1,
     expBaseGain: 1,
@@ -254,6 +254,7 @@ export const StateContext = ({ children }) => {
     fight: false,
     kill: false,
     killTime: 10000,
+    killedInTime: false,
   });
 
   const [monster, setMonster] = useState({
@@ -414,15 +415,16 @@ export const StateContext = ({ children }) => {
       const interval = setInterval(() => {
         setMonster({ ...monster, hp: monster.hp - gameState.currentDamage });
       }, gameState.gameSpeed * gameState.attackSpeed);
+      // descrease time to kill by game speed
+
       if (monster.hp <= 0) {
         clearInterval(interval);
         setFight({ ...fight, kill: true });
       }
       return () => clearInterval(interval);
     }
-  }, [fight]);
-
-  // dont stop fight if monster hp is less than 0
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fight, gameState.currentDamage, gameState.gameSpeed]);
 
   useEffect(() => {
     if (monster.hp > 0) {

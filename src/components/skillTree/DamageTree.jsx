@@ -57,7 +57,6 @@ const DamageTree = () => {
         },
       },
     });
-    // console.log(newDmgSkillsArray.filter((skill) => skill.choosen === true));
   };
 
   const choosenSkill = dmgSkillsArray.filter((skill) => skill.choosen === true);

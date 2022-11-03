@@ -62,7 +62,6 @@ const SpecialTree = () => {
         },
       },
     });
-    // console.log(newspecialSkillArray.filter((skill) => skill.choosen === true));
   };
 
   const choosenSkill = specialSkillArray.filter(
